@@ -53,16 +53,4 @@ Met a problem when running test code. Decide to skip it first. [3661aabbca132210
 
 First thing came out of my head is to covert the 2 Activities to Fragments and then share the ViewModel. Then I read the repository stuff. Hmmm...Feel I can save ViewModel states to the repository and read back when recreated. Nice.
 
-
-When you move from `MainActivity` to `MovieActivity`, the timer stops and is restarted when you return to the activity again. Instead of that, we would like for the timer to continue running, even if you switch between screens. The only time the timer should stop is if the user taps on the pause icon in `MainActivity`.
-
-If you would like to add any UX variations on this, feel free to get creative as you want, just ensure that you maintain the timer across navigation between activites. 
-
-We are looking for an implementation of some kind of repository where this state will be stored and how it is plugged into the rest of the app. Also the integration with the current app to make this work will be reviewed.
-
-
-## Other Notes
-
-Please send through any other code or projects that you're proud of and would like to share with us.
-
-Any feedback on the coding challenge once you're done is also appreciated!
+The main idea is to keep the exisitng local UI driver, but save the started moment on server.
