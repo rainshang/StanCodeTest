@@ -47,7 +47,12 @@ java.lang.RuntimeException: Method uptimeMillis in android.os.SystemClock not mo
 ```
 I think DI is a peroper solution here. But I choose to manually inject it cause this's only used here.
 
+Met a problem when running test code. Decide to skip it first. [3661aabbca132210642a78785d38b66f1ea5b3a5]()
+
 ### Task 3 - New feature
+
+First thing came out of my head is to covert the 2 Activities to Fragments and then share the ViewModel. Then I read the repository stuff. Hmmm...Feel I can save ViewModel states to the repository and read back when recreated. Nice.
+
 
 When you move from `MainActivity` to `MovieActivity`, the timer stops and is restarted when you return to the activity again. Instead of that, we would like for the timer to continue running, even if you switch between screens. The only time the timer should stop is if the user taps on the pause icon in `MainActivity`.
 

@@ -44,7 +44,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.android.pictureinpicture.databinding.MainActivityBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /** Intent action for stopwatch controls from Picture-in-Picture mode.  */
 private const val ACTION_STOPWATCH_CONTROL = "stopwatch_control"
@@ -60,22 +62,10 @@ private const val REQUEST_START_OR_PAUSE = 4
 /**
  * Demonstrates usage of Picture-in-Picture mode on phones and tablets.
  */
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private val uptimeProvider = object : MainViewModel.UptimeProvider {
-        override fun uptimeMillis(): Long = SystemClock.uptimeMillis()
-    }
-
-    private val viewModel: MainViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return when (modelClass) {
-                    MainViewModel::class.java -> MainViewModel(uptimeProvider) as T
-                    else -> super.create(modelClass)
-                }
-            }
-        }
-    }
+    private val viewModel: MainViewModel by viewModels()
     private lateinit var binding: MainActivityBinding
 
     /**

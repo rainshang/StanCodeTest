@@ -22,15 +22,25 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.example.android.pictureinpicture.timer.TimerRepo
+import com.example.android.pictureinpicture.timer.TimerState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel(private val uptimeProvider: UptimeProvider) : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val uptimeProvider: UptimeProvider,
+    private val timerRepo: TimerRepo
+) : ViewModel() {
 
     private var job: Job? = null
+
+    private var serverTime: Long = System.currentTimeMillis()
 
     private var startUptimeMillis = uptimeProvider.uptimeMillis()
     private val timeMillis = MutableLiveData(0L)
@@ -48,16 +58,31 @@ class MainViewModel(private val uptimeProvider: UptimeProvider) : ViewModel() {
         "$m:$s:$h"
     }
 
+    init {
+        viewModelScope.launch {
+            serverTime = timerRepo.getTime()
+            val (isStarted, startedTime) = timerRepo.getTimerState()
+            _started.value = isStarted
+            timeMillis.value = if (isStarted) serverTime - startedTime else 0
+            syncDriver()
+        }
+    }
+
     /**
      * Starts the stopwatch if it is not yet started, or pauses it if it is already started.
      */
     fun startOrPause() {
+        _started.value = _started.value != true
+        syncDriver()
+        saveState()
+    }
+
+    private fun syncDriver() {
         if (_started.value == true) {
-            _started.value = false
-            job?.cancel()
+            if (job?.isActive != true) job = viewModelScope.launch { start() }
         } else {
-            _started.value = true
-            job = viewModelScope.launch { start() }
+            job?.cancel()
+            job = null
         }
     }
 
@@ -70,12 +95,29 @@ class MainViewModel(private val uptimeProvider: UptimeProvider) : ViewModel() {
         }
     }
 
+    private fun saveState() {
+        viewModelScope.launch {
+            timerRepo.setTimerState(
+                TimerState(
+                    _started.value ?: false,
+                    serverTime - (timeMillis.value ?: 0)
+                )
+            )
+        }
+    }
+
     /**
      * Clears the stopwatch to 00:00:00.
      */
     fun clear() {
         startUptimeMillis = uptimeProvider.uptimeMillis()
         timeMillis.value = 0L
+        saveState()
+    }
+
+    override fun onCleared() {
+        saveState()
+        super.onCleared()
     }
 
     interface UptimeProvider {
