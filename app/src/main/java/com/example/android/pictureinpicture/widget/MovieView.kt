@@ -19,6 +19,7 @@ package com.example.android.pictureinpicture.widget
 import android.content.Context
 import android.graphics.Color
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
@@ -33,6 +34,7 @@ import android.view.View.OnClickListener
 import android.widget.ImageButton
 import android.widget.RelativeLayout
 import androidx.annotation.RawRes
+import androidx.annotation.RequiresApi
 import com.example.android.pictureinpicture.R
 import java.io.IOException
 import java.lang.ref.WeakReference
@@ -349,13 +351,16 @@ class MovieView @JvmOverloads constructor(
         mediaPlayer = MediaPlayer()
         mediaPlayer?.let { player ->
             player.setSurface(surface)
-            startVideo()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                startVideo()
+            }
         }
     }
 
     /**
      * Restarts playback of the video.
      */
+    @RequiresApi(Build.VERSION_CODES.N)
     fun startVideo() {
         mediaPlayer?.let { player ->
             player.reset()
