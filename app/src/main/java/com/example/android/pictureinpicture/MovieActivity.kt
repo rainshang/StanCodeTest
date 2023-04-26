@@ -30,6 +30,7 @@ import android.text.util.Linkify
 import android.util.Rational
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -90,10 +91,8 @@ class MovieActivity : AppCompatActivity() {
         }
 
         override fun onMovieMinimized() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // The MovieView wants us to minimize it. We enter Picture-in-Picture mode now.
-                minimize()
-            }
+            // The MovieView wants us to minimize it. We enter Picture-in-Picture mode now.
+            minimize()
         }
     }
 
@@ -103,11 +102,7 @@ class MovieActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         Linkify.addLinks(binding.explanation, Linkify.ALL)
-        binding.pip.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                minimize()
-            }
-        }
+        binding.pip.setOnClickListener { minimize() }
         binding.switchExample.setOnClickListener {
             startActivity(Intent(this@MovieActivity, MainActivity::class.java))
             finish()
@@ -225,9 +220,15 @@ class MovieActivity : AppCompatActivity() {
     /**
      * Enters Picture-in-Picture mode.
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun minimize() {
-        enterPictureInPictureMode(updatePictureInPictureParams())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            enterPictureInPictureMode(updatePictureInPictureParams())
+        } else {
+            AlertDialog.Builder(this@MovieActivity)
+                .setMessage(R.string.enter_picture_in_picture_api_warning)
+                .setNegativeButton(android.R.string.ok) { _, _ -> }
+                .show()
+        }
     }
 
     /**

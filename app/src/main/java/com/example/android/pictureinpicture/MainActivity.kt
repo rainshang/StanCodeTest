@@ -34,6 +34,7 @@ import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -87,6 +88,11 @@ class MainActivity : AppCompatActivity() {
         binding.pip.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 enterPictureInPictureMode(updatePictureInPictureParams(viewModel.started.value == true))
+            } else {
+                AlertDialog.Builder(this)
+                    .setMessage(R.string.enter_picture_in_picture_api_warning)
+                    .setNegativeButton(android.R.string.ok) { _, _ -> }
+                    .show()
             }
         }
         binding.switchExample.setOnClickListener {
@@ -104,11 +110,23 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Use trackPipAnimationHint view to make a smooth enter/exit pip transition.
-            // See https://android.devsite.corp.google.com/develop/ui/views/picture-in-picture#smoother-transition
-            lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.STARTED) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                when {
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.N -> R.string.n_warning
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.O -> R.string.o_warning
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.S -> R.string.s_warning
+                    else -> 0
+                }.takeIf { warningRes -> warningRes != 0 }?.run {
+                    AlertDialog.Builder(this@MainActivity)
+                        .setMessage(this)
+                        .setNegativeButton(R.string.still_use) { _, _ -> }
+                        .setPositiveButton(R.string.quit) { _, _ -> finish() }
+                        .show()
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    // Use trackPipAnimationHint view to make a smooth enter/exit pip transition.
+                    // See https://android.devsite.corp.google.com/develop/ui/views/picture-in-picture#smoother-transition
                     trackPipAnimationHintView(binding.stopwatchBackground)
                 }
             }

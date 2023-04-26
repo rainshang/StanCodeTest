@@ -26,12 +26,13 @@ Found it!!
 So wrap it with version checking. The App is running on api 21! [571b3b247c491c9177ebcd3335b85df678cc5d27]()
 3. Played a while. Found it crashes when clicking "Switch to using MediaSession". Oh, it's `MovieActivity`. Guess need to do the same version check.
 4. Still crashes. OK, `MovieView`...
-5. After adding version checking in `MovieView`, it doesn't crash any more.
+5. After adding version checking in `MovieView`, it doesn't crash any more. [32ece981a533099252c7c342c7655bbb3341d30a]()
 ```kotlin
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 startVideo()
             }
 ```
+6. Time to add more user friendly tips.
 
 
 
