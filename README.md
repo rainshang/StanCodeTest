@@ -1,3 +1,7 @@
+The [requirement](stan_readme.md) from Stan. The developing [diary](diary.md).
+===
+
+
 Android PictureInPicture Sample (Kotlin)
 ========================================
 
