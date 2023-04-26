@@ -32,16 +32,20 @@ So wrap it with version checking. The App is running on api 21! [571b3b247c491c9
                 startVideo()
             }
 ```
-6. Time to add more user friendly tips.
+6. Time to add more user friendly tips. [20807a129b121c0e414d93c0076258dd344fdb58]()
 
 
 
 
 ### Task 2 - Unit tests
 
-The project already has some tests for `MainActivity` and `MovieActivity`, however none for the `MainViewModel`. Please add some that you would think are appropriate and include any app changes that may be needed. Add any libraries that you would like to be able to achieve this task.
+Since the project already has some tests for `MainActivity` and `MovieActivity`, I'll just create Unit Test for `MainViewModel`.
 
-We are looking for how changes to support unit tests are made, as well as choice of things to test.
+Well, met this
+```log
+java.lang.RuntimeException: Method uptimeMillis in android.os.SystemClock not mocked. See http://g.co/androidstudio/not-mocked for details.
+```
+I think DI is a peroper solution here. But I choose to manually inject it cause this's only used here.
 
 ### Task 3 - New feature
 
